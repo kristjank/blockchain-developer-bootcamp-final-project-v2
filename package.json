@@ -1,20 +1,13 @@
 {
-  "name": "solidity-template",
+  "name": "simple-dao",
   "version": "1.0.0",
-  "description": "Solidity smart contracts template ",
+  "description": "Simple DAO project",
   "main": "index.js",
-  "author": "LooksRare",
   "license": "MIT",
   "private": true,
   "keywords": [
-    "looksrare"
+    "solidity"
   ],
-  "homepage": "https://looksrare.org/",
-  "bugs": "https://github.com/LooksRare/solidity-template/issues",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/LooksRare/solidity-template.git"
-  },
   "scripts": {
     "compile": "hardhat compile",
     "compile:force": "hardhat compile --force",
