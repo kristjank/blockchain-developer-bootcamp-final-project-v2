@@ -11,16 +11,14 @@ import "hardhat-abi-exporter";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "dotenv/config";
-import { task, HardhatUserConfig } from "hardhat/config";
+import { HardhatUserConfig } from "hardhat/config";
+
+import "./tasks/accounts";
+import "./tasks/query";
 
 const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL || "https://eth-rinkeby.alchemyapi.io/v2/your-api-key";
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "privatKey";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
-
-task("accounts", "Prints the list of accounts", async (_args, hre) => {
-  const accounts = await hre.ethers.getSigners();
-  accounts.forEach(async (account) => console.info(account.address));
-});
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",

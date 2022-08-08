@@ -8,12 +8,13 @@ import {
   MIN_DELAY,
   developmentChains,
   proposalsFile,
+  PROPOSAL_INDEX,
 } from "../helper-hardhat-config";
 import { moveBlocks } from "../utils/move-blocks";
 import { moveTime } from "../utils/move-time";
 import * as fs from "fs";
 
-const index = 0;
+const index = PROPOSAL_INDEX;
 
 export async function execute(proposalIndex: number) {
   const args = [NEW_STORE_VALUE];

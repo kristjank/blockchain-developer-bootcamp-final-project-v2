@@ -1,5 +1,5 @@
 /* eslint-disable no-process-exit */
-// eslint-disable-next-line node/no-unpublished-import
+/* eslint-disable node/no-unpublished-import */
 import { ethers, network } from "hardhat";
 import {
   NEW_STORE_VALUE,

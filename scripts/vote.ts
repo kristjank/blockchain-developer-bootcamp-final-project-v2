@@ -2,10 +2,10 @@
 import * as fs from "fs";
 // eslint-disable-next-line node/no-unpublished-import
 import { network, ethers } from "hardhat";
-import { proposalsFile, developmentChains, VOTING_PERIOD } from "../helper-hardhat-config";
+import { proposalsFile, developmentChains, VOTING_PERIOD, PROPOSAL_INDEX } from "../helper-hardhat-config";
 import { moveBlocks } from "../utils/move-blocks";
 
-const index = 0;
+const index = PROPOSAL_INDEX;
 
 async function main(proposalIndex: number) {
   const proposals = JSON.parse(fs.readFileSync(proposalsFile, "utf8"));

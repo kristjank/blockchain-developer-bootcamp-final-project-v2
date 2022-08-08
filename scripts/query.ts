@@ -1,33 +1,14 @@
 /* eslint-disable node/no-unpublished-import */
 /* eslint-disable no-process-exit */
 import { ethers, network } from "hardhat";
-import {
-  FUNC,
-  NEW_STORE_VALUE,
-  PROPOSAL_DESCRIPTION,
-  MIN_DELAY,
-  developmentChains,
-  proposalsFile,
-  PROPOSAL_INDEX,
-} from "../helper-hardhat-config";
-import { moveBlocks } from "../utils/move-blocks";
-import { moveTime } from "../utils/move-time";
+import { proposalsFile, PROPOSAL_INDEX } from "../helper-hardhat-config";
 import * as fs from "fs";
 
 const index = PROPOSAL_INDEX;
 
-export async function queue(proposalIndex: number) {
-  const args = [NEW_STORE_VALUE];
-  const functionToCall = FUNC;
-  const box = await ethers.getContract("Box");
-  const encodedFunctionCall = box.interface.encodeFunctionData(functionToCall, args);
-  const descriptionHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(PROPOSAL_DESCRIPTION));
-  // could also use ethers.utils.id(PROPOSAL_DESCRIPTION)
-
+export async function query(proposalIndex: number) {
+  console.log("Querying...");
   const governor = await ethers.getContract("GovernorContract");
-  console.log("Queueing...");
-  const queueTx = await governor.queue([box.address], [0], [encodedFunctionCall], descriptionHash);
-  await queueTx.wait(1);
 
   // Reading data
   const proposals = JSON.parse(fs.readFileSync(proposalsFile, "utf8"));
@@ -45,7 +26,7 @@ export async function queue(proposalIndex: number) {
   console.log(`Current Proposal Deadline: ${proposalDeadline}`);
 }
 
-queue(index)
+query(index)
   .then(() => process.exit(0))
   .catch((error) => {
     console.error(error);
