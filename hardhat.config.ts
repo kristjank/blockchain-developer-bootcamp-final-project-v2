@@ -26,11 +26,13 @@ const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
+      // used when run with tests
       chainId: 31337,
       allowUnlimitedContractSize: true,
       gasPrice: "auto",
     },
     localhost: {
+      // user when run with node and deploy
       chainId: 31337,
       allowUnlimitedContractSize: true,
       gasPrice: "auto",
