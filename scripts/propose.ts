@@ -9,7 +9,7 @@ import {
   VOTING_DELAY,
   proposalsFile,
 } from "../helper-hardhat-config";
-import { moveBlocks } from "../utils/mode-blocks";
+import { moveBlocks } from "../utils/move-blocks";
 import * as fs from "fs";
 
 export async function propose(args: any[], functionToCall: string, proposalDescription: string): Promise<void> {
