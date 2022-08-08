@@ -12,6 +12,7 @@ RUN su node -c "umask 0002 && npm install -g ${NODE_MODULES}" \
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 RUN su node -c "curl -L https://foundry.paradigm.xyz | bash"
+RUN su node -c "foundryup"
 
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
