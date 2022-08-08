@@ -19,7 +19,8 @@
     "test": "hardhat test",
     "test:gas": "REPORT_GAS=true hardhat test",
     "test:forge": "forge test",
-    "test:coverage": "hardhat coverage && hardhat compile --force"
+    "test:coverage": "hardhat coverage && hardhat compile --force",
+    "deploy:local": "yarn hardhat deploy"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
