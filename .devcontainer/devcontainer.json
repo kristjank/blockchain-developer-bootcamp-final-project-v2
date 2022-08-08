@@ -20,7 +20,8 @@
         "dbaeumer.vscode-eslint",
         "juanblanco.solidity",
         "esbenp.prettier-vscode",
-        "idrabenia.solidity-solhint"
+        "idrabenia.solidity-solhint",
+        "nomicfoundation.hardhat-solidity"
       ]
     }
   },
