@@ -20,7 +20,9 @@
     "test:gas": "REPORT_GAS=true hardhat test",
     "test:forge": "forge test",
     "test:coverage": "hardhat coverage && hardhat compile --force",
-    "deploy:local": "yarn hardhat deploy"
+    "deploy:local": "hardhat deploy",
+    "deploy:rinkeby": "hardhat deploy --network rinkeby",
+    "node:local": "hardhat node"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
