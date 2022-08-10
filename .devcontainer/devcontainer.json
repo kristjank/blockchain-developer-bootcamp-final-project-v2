@@ -19,7 +19,7 @@
       "extensions": [
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "idrabenia.solidity-solhint",
+        "juanblanco.solidity",
         "nomicfoundation.hardhat-solidity"
       ]
     }
