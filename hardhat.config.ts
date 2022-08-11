@@ -1,15 +1,5 @@
-// import type { HardhatUserConfig } from "hardhat/types";
-// import { task } from "hardhat/config";
-import "hardhat-deploy";
-
-import "@nomiclabs/hardhat-etherscan";
-import "@nomiclabs/hardhat-waffle";
-import "@typechain/hardhat";
-import "@nomiclabs/hardhat-solhint";
-import "@nomiclabs/hardhat-ethers";
+import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-abi-exporter";
-import "hardhat-gas-reporter";
-import "solidity-coverage";
 import "dotenv/config";
 import { HardhatUserConfig } from "hardhat/config";
 
@@ -21,7 +11,6 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY || "privatKey";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "hardhat",
   networks: {
     hardhat: {
       // used when run with tests
@@ -39,6 +28,7 @@ const config: HardhatUserConfig = {
       url: RINKEBY_RPC_URL,
       accounts: [PRIVATE_KEY],
       chainId: 4,
+      gasPrice: "auto",
     },
   },
   etherscan: {
@@ -71,12 +61,6 @@ const config: HardhatUserConfig = {
     currency: "USD",
     outputFile: "gas-report.txt",
     excludeContracts: ["test*"],
-  },
-  namedAccounts: {
-    deployer: {
-      default: 0, // here this will by default take the first account as deployer
-      1: 0, // similarly on mainnet it will take the first account as deployer. Note though that depending on how hardhat network are configured, the account 0 on one network can be different than on another
-    },
   },
 };
 

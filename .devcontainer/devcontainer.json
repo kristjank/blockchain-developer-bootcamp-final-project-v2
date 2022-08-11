@@ -16,12 +16,7 @@
     // Configure properties specific to VS Code.
     "vscode": {
       // Add the IDs of extensions you want installed when the container is created.
-      "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "juanblanco.solidity",
-        "nomicfoundation.hardhat-solidity"
-      ]
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode", "nomicfoundation.hardhat-solidity"]
     }
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.

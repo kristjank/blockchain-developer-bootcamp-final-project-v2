@@ -4,6 +4,7 @@ cache
 coverage*
 gasReporterOutput.json
 typechain
+typechain-types
 lib*
 deployments
 proposals.json
