@@ -8,3 +8,4 @@ typechain-types
 lib*
 deployments
 proposals.json
+abis/
