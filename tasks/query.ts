@@ -5,9 +5,9 @@ import { proposalsFile } from "../helper-hardhat-config";
 import * as fs from "fs";
 
 task("query", "Query Proposal State")
-  .addParam("proposalIndex", "Proposal index from proposals.json")
-  .setAction(async (_args, hre) => {
-    const governor = await hre.ethers.getContract("GovernorContract");
+    .addParam("proposalIndex", "Proposal index from proposals.json")
+    .setAction(async (_args, hre) => {
+        /* const governor = await hre.ethers.getContract("GovernorContract");
     console.log("Querying..");
 
     // Reading data
@@ -23,5 +23,5 @@ task("query", "Query Proposal State")
     // What block # the proposal was snapshot
     console.log(`Current Proposal Snapshot: ${proposalSnapShot}`);
     // The block number the proposal voting expires
-    console.log(`Current Proposal Deadline: ${proposalDeadline}`);
-  });
+    console.log(`Current Proposal Deadline: ${proposalDeadline}`); */
+    });
