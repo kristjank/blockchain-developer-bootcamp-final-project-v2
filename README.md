@@ -12,8 +12,8 @@ It is a hybrid [Hardhat](https://hardhat.org/) repo that also requires [Foundry]
 
 ### Run tests
 
-- TypeScript tests are included in the `typescript` folder in the `test` folder at the root of the repo.
-- Solidity tests are included in the `foundry` folder in the `test` folder at the root of the repo.
+-   TypeScript tests are included in the `typescript` folder in the `test` folder at the root of the repo.
+-   Solidity tests are included in the `foundry` folder in the `test` folder at the root of the repo.
 
 ### Example of Foundry/Forge commands
 
