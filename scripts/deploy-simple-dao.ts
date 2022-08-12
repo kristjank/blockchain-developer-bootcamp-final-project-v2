@@ -2,17 +2,8 @@
 /* eslint-disable camelcase */
 /* eslint-disable node/no-unpublished-import */
 import { ethers } from "hardhat";
-import { Signer } from "ethers";
-import {
-    Box,
-    Box__factory,
-    GovernanceToken,
-    GovernanceToken__factory,
-    GovernorContract,
-    GovernorContract__factory,
-    TimeLock,
-    TimeLock__factory,
-} from "../typechain-types";
+
+import { GovernanceToken, TimeLock } from "../typechain-types";
 import {
     networkConfig,
     developmentChains,
@@ -22,74 +13,11 @@ import {
     VOTING_PERIOD,
     ADDRESS_ZERO,
 } from "../helper-hardhat-config";
-
-async function deployGovernanceToken(deployer: Signer): Promise<GovernanceToken> {
-    console.log("Deploying GovernanceToken and waiting for confirmations...");
-
-    const governanceTokenFactory = (await ethers.getContractFactory(
-        "GovernanceToken",
-        deployer
-    )) as GovernanceToken__factory;
-    const governanceTokenContract = await governanceTokenFactory.deploy();
-    await governanceTokenContract.deployed();
-    console.log(
-        `Deployed GovernanceToken at ${governanceTokenContract.address} with trx ${governanceTokenContract.deployTransaction.hash}`
-    );
-
-    // if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
-    //  console.log("TODO: Not yet implemented VERIFY on ETHSCAN");
-    // await verify(governanceToken.address, []);
-    // }
-
-    console.log(`Delegating to ${await deployer.getAddress()}`);
-    await delegate(governanceTokenContract.address, await deployer.getAddress());
-    console.log("Delegated!");
-
-    return governanceTokenContract;
-}
-
-async function deployTimeLock(deployer: Signer): Promise<TimeLock> {
-    console.log("Deploying TimeLock and waiting for confirmations...");
-
-    const timeLockFactory = (await ethers.getContractFactory("TimeLock", deployer)) as TimeLock__factory;
-    const timeLockContract = await timeLockFactory.deploy(MIN_DELAY, [], []);
-    await timeLockContract.deployed();
-    console.log(`Deployed TimeLock at ${timeLockContract.address} with trx ${timeLockContract.deployTransaction.hash}`);
-
-    return timeLockContract;
-}
-
-async function deployBox(deployer: Signer): Promise<Box> {
-    console.log("Deploying Box and waiting for confirmations...");
-
-    const boxFactory = (await ethers.getContractFactory("Box", deployer)) as Box__factory;
-    const boxContract = await boxFactory.deploy();
-    await boxContract.deployed();
-    console.log(`Deployed TimeLock at ${boxContract.address} with trx ${boxContract.deployTransaction.hash}`);
-
-    return boxContract;
-}
-
-async function deployGovernor(deployer: Signer, governanceTokenAddress: string, timeLockAddress: string) {
-    console.log("Deploying Governor and waiting for confirmations...");
-
-    const governorFactory = (await ethers.getContractFactory(
-        "GovernorContract",
-        deployer
-    )) as GovernorContract__factory;
-    const governorContract: GovernorContract = await governorFactory.deploy(
-        governanceTokenAddress,
-        timeLockAddress,
-        QUORUM_PERCENTAGE,
-        VOTING_PERIOD,
-        VOTING_DELAY
-    );
-
-    await governorContract.deployed();
-    console.log(`Deployed Governor at ${governorContract.address} with trx ${governorContract.deployTransaction.hash}`);
-}
+import { getContractSigner, deployContract, deployData } from "../utils/deploy-helpers";
+import { Signer } from "ethers";
 
 async function delegate(governanceTokenAddress: string, delegatedAccount: string) {
+    console.log(`Delegating to ${delegatedAccount}`);
     const governanceToken = await ethers.getContractAt("GovernanceToken", governanceTokenAddress);
     const transactionResponse = await governanceToken.delegate(delegatedAccount);
     await transactionResponse.wait(1);
@@ -118,22 +46,25 @@ async function setupContracts(deployer: Signer, governor: GovernanceToken, timeL
     await revokeTx.wait(1);
 }
 
-async function getContractSigner(): Promise<Signer> {
-    const [deployer] = await ethers.getSigners();
-    console.log("----------------------------------------------------");
-    console.log("Deploying the contracts with the account:", await deployer.getAddress());
-    return deployer;
-}
-
 async function main() {
     const deployer = await getContractSigner();
     // deployment
-    const governanceToken = await deployGovernanceToken(deployer);
-    const timeLock = await deployTimeLock(deployer);
-    await deployBox(deployer);
-    await deployGovernor(deployer, governanceToken.address, timeLock.address);
+    const governanceToken = (await deployContract(deployer, "GovernanceToken", [])) as GovernanceToken;
+    await delegate(governanceToken.address, await deployer.getAddress());
 
+    const timeLock = (await deployContract(deployer, "TimeLock", [MIN_DELAY, [], []])) as TimeLock;
+    await deployContract(deployer, "Box", []);
+    await deployContract(deployer, "GovernorContract", [
+        governanceToken.address,
+        timeLock.address,
+        QUORUM_PERCENTAGE,
+        VOTING_PERIOD,
+        VOTING_DELAY,
+    ]);
+
+    // setup governanco for DAO and correct access
     await setupContracts(deployer, governanceToken, timeLock);
+    console.log(deployData);
 }
 
 main()
