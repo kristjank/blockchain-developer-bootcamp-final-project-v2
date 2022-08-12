@@ -1,8 +1,9 @@
 /* eslint-disable no-process-exit */
 /* eslint-disable camelcase */
 /* eslint-disable node/no-unpublished-import */
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import { Contract, Signer } from "ethers";
+import * as fs from "fs";
 
 interface IContractData {
     contract: string;
@@ -19,7 +20,7 @@ export async function getContractSigner(): Promise<Signer> {
 }
 
 // saving contract info for use in scripts
-function saveContractInfo(contractName: string, data: Contract): void {
+async function saveContractInfo(contractName: string, data: Contract): Promise<void> {
     const contractData: IContractData = {
         contract: contractName,
         address: data.address,
@@ -27,6 +28,10 @@ function saveContractInfo(contractName: string, data: Contract): void {
     };
 
     deployData[contractName] = contractData;
+
+    fs.mkdirSync(`deployments/${network.name}`, { recursive: true });
+    fs.writeFileSync(`deployments/${network.name}/${contractName}.json`, JSON.stringify(contractData, null, 4));
+    fs.writeFileSync(`deployments/${network.name}/deployments.json`, JSON.stringify(deployData, null, 4));
 }
 
 export async function deployContract(
@@ -54,6 +59,12 @@ export async function deployContract(
 }
 
 export async function getDeployedContract(contractName: string): Promise<Contract> {
-    const contractAddress = deployData[contractName].address;
-    return await ethers.getContractAt(contractName, contractAddress);
+    if (!deployData[contractName]) {
+        const fileContent = fs.readFileSync(`deployments/${network.name}/${contractName}.json`, "utf8");
+        const contractInfo: IContractData = JSON.parse(fileContent);
+
+        deployData[contractName] = contractInfo;
+    }
+
+    return await ethers.getContractAt(contractName, deployData[contractName].address);
 }

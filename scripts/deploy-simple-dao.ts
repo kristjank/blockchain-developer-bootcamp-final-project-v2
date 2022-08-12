@@ -1,8 +1,7 @@
 /* eslint-disable no-process-exit */
 /* eslint-disable camelcase */
 /* eslint-disable node/no-unpublished-import */
-import { ethers } from "hardhat";
-
+import { ethers, network } from "hardhat";
 import { GovernanceToken, TimeLock } from "../typechain-types";
 import {
     networkConfig,
