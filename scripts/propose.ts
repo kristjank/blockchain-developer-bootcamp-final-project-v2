@@ -10,11 +10,12 @@ import {
     proposalsFile,
 } from "../helper-hardhat-config";
 import { moveBlocks } from "../utils/move-blocks";
+import { getDeployedContract } from "../utils/deploy-helpers";
 import * as fs from "fs";
 
 export async function propose(args: any[], functionToCall: string, proposalDescription: string): Promise<void> {
-    const governor = await ethers.getContract("GovernorContract");
-    const box = await ethers.getContract("Box");
+    const governor = await getDeployedContract("GovernorContract");
+    const box = await getDeployedContract("Box");
 
     const encodedFunctionCall = box.interface.encodeFunctionData(functionToCall, args);
 

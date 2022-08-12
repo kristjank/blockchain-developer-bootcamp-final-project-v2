@@ -13,18 +13,19 @@ import {
 import { moveBlocks } from "../utils/move-blocks";
 import { moveTime } from "../utils/move-time";
 import * as fs from "fs";
+import { getDeployedContract } from "../utils/deploy-helpers";
 
 const index = PROPOSAL_INDEX;
 
-export async function queue(proposalIndex: number) {
+export async function queue(proposalIndex: number): Promise<void> {
     const args = [NEW_STORE_VALUE];
     const functionToCall = FUNC;
-    const box = await ethers.getContract("Box");
+    const box = await getDeployedContract("Box");
     const encodedFunctionCall = box.interface.encodeFunctionData(functionToCall, args);
     const descriptionHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(PROPOSAL_DESCRIPTION));
     // could also use ethers.utils.id(PROPOSAL_DESCRIPTION)
 
-    const governor = await ethers.getContract("GovernorContract");
+    const governor = await getDeployedContract("GovernorContract");
     console.log("Queueing...");
     const queueTx = await governor.queue([box.address], [0], [encodedFunctionCall], descriptionHash);
     await queueTx.wait(1);

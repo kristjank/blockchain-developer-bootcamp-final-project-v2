@@ -3,6 +3,7 @@ import * as fs from "fs";
 // eslint-disable-next-line node/no-unpublished-import
 import { network, ethers } from "hardhat";
 import { proposalsFile, developmentChains, VOTING_PERIOD, PROPOSAL_INDEX } from "../helper-hardhat-config";
+import { getDeployedContract } from "../utils/deploy-helpers";
 import { moveBlocks } from "../utils/move-blocks";
 
 const index = PROPOSAL_INDEX;
@@ -18,9 +19,9 @@ async function main(proposalIndex: number) {
 }
 
 // 0 = Against, 1 = For, 2 = Abstain for this example
-export async function vote(proposalId: string, voteWay: number, reason: string) {
+export async function vote(proposalId: string, voteWay: number, reason: string): Promise<void> {
     console.log("Voting...");
-    const governor = await ethers.getContract("GovernorContract");
+    const governor = await getDeployedContract("GovernorContract");
     const voteTx = await governor.castVoteWithReason(proposalId, voteWay, reason);
     const voteTxReceipt = await voteTx.wait(1);
     console.log(voteTxReceipt.events[0].args.reason);

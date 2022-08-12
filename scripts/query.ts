@@ -1,14 +1,15 @@
 /* eslint-disable node/no-unpublished-import */
 /* eslint-disable no-process-exit */
-import { ethers, network } from "hardhat";
+import { network } from "hardhat";
 import { proposalsFile, PROPOSAL_INDEX } from "../helper-hardhat-config";
 import * as fs from "fs";
+import { getDeployedContract } from "../utils/deploy-helpers";
 
 const index = PROPOSAL_INDEX;
 
-export async function query(proposalIndex: number) {
+export async function query(proposalIndex: number): Promise<void> {
     console.log("Querying...");
-    const governor = await ethers.getContract("GovernorContract");
+    const governor = await getDeployedContract("GovernorContract");
 
     // Reading data
     const proposals = JSON.parse(fs.readFileSync(proposalsFile, "utf8"));

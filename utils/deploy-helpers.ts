@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable node/no-unpublished-import */
 import { ethers } from "hardhat";
-import { BaseContract, Signer } from "ethers";
+import { Contract, Signer } from "ethers";
 
 interface IContractData {
     contract: string;
@@ -19,7 +19,7 @@ export async function getContractSigner(): Promise<Signer> {
 }
 
 // saving contract info for use in scripts
-function saveContractInfo(contractName: string, data: BaseContract): void {
+function saveContractInfo(contractName: string, data: Contract): void {
     const contractData: IContractData = {
         contract: contractName,
         address: data.address,
@@ -33,7 +33,7 @@ export async function deployContract(
     deployer: Signer,
     contractName: string,
     constructorArguments: unknown[]
-): Promise<BaseContract> {
+): Promise<Contract> {
     console.log("--------------------------------------------------");
     console.log(`Deploying ${contractName} with account ${await deployer.getAddress()}, waiting for confirmations...`);
 
@@ -51,4 +51,9 @@ export async function deployContract(
 
     saveContractInfo(contractName, contractToDeploy);
     return contractToDeploy;
+}
+
+export async function getDeployedContract(contractName: string): Promise<Contract> {
+    const contractAddress = deployData[contractName].address;
+    return await ethers.getContractAt(contractName, contractAddress);
 }

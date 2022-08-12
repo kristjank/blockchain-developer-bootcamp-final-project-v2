@@ -13,13 +13,14 @@ import {
 import { moveBlocks } from "../utils/move-blocks";
 import { moveTime } from "../utils/move-time";
 import * as fs from "fs";
+import { getDeployedContract } from "../utils/deploy-helpers";
 
 const index = PROPOSAL_INDEX;
 
-export async function execute(proposalIndex: number) {
+export async function execute(proposalIndex: number): Promise<void> {
     const args = [NEW_STORE_VALUE];
     const functionToCall = FUNC;
-    const box = await ethers.getContract("Box");
+    const box = await getDeployedContract("Box");
     const encodedFunctionCall = box.interface.encodeFunctionData(functionToCall, args);
     const descriptionHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(PROPOSAL_DESCRIPTION));
     // could also use ethers.utils.id(PROPOSAL_DESCRIPTION)
@@ -31,7 +32,7 @@ export async function execute(proposalIndex: number) {
     }
 
     console.log("Executing...");
-    const governor = await ethers.getContract("GovernorContract");
+    const governor = await getDeployedContract("GovernorContract");
     // this will fail on a testnet because you need to wait for the MIN_DELAY!
     const executeTx = await governor.execute([box.address], [0], [encodedFunctionCall], descriptionHash);
     await executeTx.wait(1);
