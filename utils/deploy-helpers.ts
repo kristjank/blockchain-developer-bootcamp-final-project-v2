@@ -37,13 +37,18 @@ async function saveContractInfo(contractName: string, data: Contract): Promise<v
 export async function deployContract(
     deployer: Signer,
     contractName: string,
-    constructorArguments: unknown[]
+    constructorArguments?: unknown[]
 ): Promise<Contract> {
     console.log("--------------------------------------------------");
     console.log(`Deploying ${contractName} with account ${await deployer.getAddress()}, waiting for confirmations...`);
 
+    let contractArgs: unknown[] = [];
+    if (typeof constructorArguments !== "undefined") {
+        contractArgs = constructorArguments;
+    }
+
     const contractFactory = await ethers.getContractFactory(contractName, deployer);
-    const contractToDeploy = await contractFactory.deploy(...constructorArguments);
+    const contractToDeploy = await contractFactory.deploy(...contractArgs);
     await contractToDeploy.deployed();
     console.log(
         `Deployed ${contractName} at ${contractToDeploy.address} with trx ${contractToDeploy.deployTransaction.hash}`

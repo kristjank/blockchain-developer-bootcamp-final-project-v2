@@ -48,11 +48,11 @@ async function setupContracts(deployer: Signer, governor: GovernanceToken, timeL
 async function main() {
     const deployer = await getContractSigner();
     // deployment
-    const governanceToken = (await deployContract(deployer, "GovernanceToken", [])) as GovernanceToken;
+    const governanceToken = (await deployContract(deployer, "GovernanceToken")) as GovernanceToken;
     await delegate(governanceToken.address, await deployer.getAddress());
 
     const timeLock = (await deployContract(deployer, "TimeLock", [MIN_DELAY, [], []])) as TimeLock;
-    await deployContract(deployer, "Box", []);
+    await deployContract(deployer, "Box");
     await deployContract(deployer, "GovernorContract", [
         governanceToken.address,
         timeLock.address,
