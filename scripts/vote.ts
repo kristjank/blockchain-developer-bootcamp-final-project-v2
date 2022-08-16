@@ -1,10 +1,10 @@
+/* eslint-disable node/no-unpublished-import */
 /* eslint-disable no-process-exit */
 import * as fs from "fs";
-// eslint-disable-next-line node/no-unpublished-import
-import { network, ethers } from "hardhat";
+import { network } from "hardhat";
 import { proposalsFile, developmentChains, VOTING_PERIOD, PROPOSAL_INDEX } from "../helper-hardhat-config";
 import { getDeployedContract } from "../utils/deploy-helpers";
-import { moveBlocks } from "../utils/move-blocks";
+import { mine } from "@nomicfoundation/hardhat-network-helpers";
 
 const index = PROPOSAL_INDEX;
 
@@ -28,7 +28,7 @@ export async function vote(proposalId: string, voteWay: number, reason: string):
     const proposalState = await governor.state(proposalId);
     console.log(`Current Proposal State: ${proposalState}`);
     if (developmentChains.includes(network.name)) {
-        await moveBlocks(VOTING_PERIOD + 1);
+        await mine(VOTING_PERIOD + 1);
     }
 }
 

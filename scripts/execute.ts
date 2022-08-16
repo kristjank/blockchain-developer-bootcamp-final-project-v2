@@ -1,6 +1,7 @@
 /* eslint-disable node/no-unpublished-import */
 /* eslint-disable no-process-exit */
 import { ethers, network } from "hardhat";
+import * as helpers from "@nomicfoundation/hardhat-network-helpers";
 import {
     FUNC,
     NEW_STORE_VALUE,
@@ -10,8 +11,6 @@ import {
     proposalsFile,
     PROPOSAL_INDEX,
 } from "../helper-hardhat-config";
-import { moveBlocks } from "../utils/move-blocks";
-import { moveTime } from "../utils/move-time";
 import * as fs from "fs";
 import { getDeployedContract } from "../utils/deploy-helpers";
 
@@ -25,10 +24,8 @@ export async function execute(proposalIndex: number): Promise<void> {
     const descriptionHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(PROPOSAL_DESCRIPTION));
     // could also use ethers.utils.id(PROPOSAL_DESCRIPTION)
 
-    // move time here, as queue script did not simulate it
     if (developmentChains.includes(network.name)) {
-        await moveTime(MIN_DELAY + 1);
-        await moveBlocks(1);
+        await helpers.time.increase(MIN_DELAY + 1);
     }
 
     console.log("Executing...");

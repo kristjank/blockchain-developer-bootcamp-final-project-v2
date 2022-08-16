@@ -1,17 +1,7 @@
 /* eslint-disable node/no-unpublished-import */
 /* eslint-disable no-process-exit */
 import { ethers, network } from "hardhat";
-import {
-    FUNC,
-    NEW_STORE_VALUE,
-    PROPOSAL_DESCRIPTION,
-    MIN_DELAY,
-    developmentChains,
-    proposalsFile,
-    PROPOSAL_INDEX,
-} from "../helper-hardhat-config";
-import { moveBlocks } from "../utils/move-blocks";
-import { moveTime } from "../utils/move-time";
+import { FUNC, NEW_STORE_VALUE, PROPOSAL_DESCRIPTION, proposalsFile, PROPOSAL_INDEX } from "../helper-hardhat-config";
 import * as fs from "fs";
 import { getDeployedContract } from "../utils/deploy-helpers";
 

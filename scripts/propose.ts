@@ -1,6 +1,7 @@
 /* eslint-disable no-process-exit */
 /* eslint-disable node/no-unpublished-import */
-import { ethers, network } from "hardhat";
+import { network } from "hardhat";
+import { mine } from "@nomicfoundation/hardhat-network-helpers";
 import {
     NEW_STORE_VALUE,
     FUNC,
@@ -9,11 +10,10 @@ import {
     VOTING_DELAY,
     proposalsFile,
 } from "../helper-hardhat-config";
-import { moveBlocks } from "../utils/move-blocks";
 import { getDeployedContract } from "../utils/deploy-helpers";
 import * as fs from "fs";
 
-export async function propose(args: any[], functionToCall: string, proposalDescription: string): Promise<void> {
+export async function propose(args: unknown[], functionToCall: string, proposalDescription: string): Promise<void> {
     const governor = await getDeployedContract("GovernorContract");
     const box = await getDeployedContract("Box");
 
@@ -27,7 +27,7 @@ export async function propose(args: any[], functionToCall: string, proposalDescr
     const proposeTx = await governor.propose([box.address], [0], [encodedFunctionCall], proposalDescription);
 
     if (developmentChains.includes(network.name)) {
-        await moveBlocks(VOTING_DELAY + 1);
+        await mine(VOTING_DELAY + 1);
     }
 
     const proposeReceipt = await proposeTx.wait(1);

@@ -1,7 +1,7 @@
 /* eslint-disable no-process-exit */
 /* eslint-disable camelcase */
 /* eslint-disable node/no-unpublished-import */
-import { ethers, network } from "hardhat";
+import { ethers, network, run } from "hardhat";
 import { Contract, Signer } from "ethers";
 import * as fs from "fs";
 
@@ -23,8 +23,8 @@ export async function getContractSigner(): Promise<Signer> {
 async function saveContractInfo(contractName: string, data: Contract): Promise<void> {
     const contractData: IContractData = {
         contract: contractName,
-        address: data.address,
-        deployTx: data.deployTransaction.hash,
+        address: data.address.toLowerCase(),
+        deployTx: data.deployTransaction.hash.toLowerCase(),
     };
 
     deployData[contractName] = contractData;
@@ -63,7 +63,7 @@ export async function deployContract(
     return contractToDeploy;
 }
 
-export async function getDeployedContract(contractName: string): Promise<Contract> {
+export async function getDeployedContract(contractName: string, signer?: Signer): Promise<Contract> {
     if (!deployData[contractName]) {
         const fileContent = fs.readFileSync(`deployments/${network.name}/${contractName}.json`, "utf8");
         const contractInfo: IContractData = JSON.parse(fileContent);
@@ -71,5 +71,21 @@ export async function getDeployedContract(contractName: string): Promise<Contrac
         deployData[contractName] = contractInfo;
     }
 
-    return await ethers.getContractAt(contractName, deployData[contractName].address);
+    return await ethers.getContractAt(contractName, deployData[contractName].address, signer);
+}
+
+export async function verify(contractAddress: string, args: unknown[]): Promise<void> {
+    console.log("Verifying contract...");
+    try {
+        await run("verify:verify", {
+            address: contractAddress,
+            constructorArguments: args,
+        });
+    } catch (e) {
+        if ((e as Error).message.toLowerCase().includes("already verified")) {
+            console.log("Already verified!");
+        } else {
+            console.log(e);
+        }
+    }
 }

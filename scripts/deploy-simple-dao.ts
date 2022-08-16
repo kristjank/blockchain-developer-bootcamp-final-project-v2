@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable node/no-unpublished-import */
 import { ethers, network } from "hardhat";
-import { GovernanceToken, TimeLock } from "../typechain-types";
+import { Box, GovernanceToken, GovernorContract, TimeLock } from "../typechain-types";
 import {
     networkConfig,
     developmentChains,
@@ -12,18 +12,18 @@ import {
     VOTING_PERIOD,
     ADDRESS_ZERO,
 } from "../helper-hardhat-config";
-import { getContractSigner, deployContract, deployData } from "../utils/deploy-helpers";
+import { getContractSigner, deployContract, deployData, getDeployedContract } from "../utils/deploy-helpers";
 import { Signer } from "ethers";
 
 async function delegate(governanceTokenAddress: string, delegatedAccount: string) {
     console.log(`Delegating to ${delegatedAccount}`);
-    const governanceToken = await ethers.getContractAt("GovernanceToken", governanceTokenAddress);
+    const governanceToken = await getDeployedContract("GovernanceToken");
     const transactionResponse = await governanceToken.delegate(delegatedAccount);
     await transactionResponse.wait(1);
     console.log(`Checkpoints: ${await governanceToken.numCheckpoints(delegatedAccount)}`);
 }
 
-async function setupContracts(deployer: Signer, governor: GovernanceToken, timeLock: TimeLock) {
+async function setupContracts(deployer: Signer, governor: GovernorContract, timeLock: TimeLock, box: Box) {
     console.log("----------------------------------------------------");
     console.log("Setting up contracts for roles...");
 
@@ -37,12 +37,16 @@ async function setupContracts(deployer: Signer, governor: GovernanceToken, timeL
     await proposerTx.wait(1);
 
     console.log(`Setting up timeLock.executorRole role to ADDRESS_ZERO (meaning anyone can execute a proposal)...`);
-    const executorTx = await timeLock.grantRole(executorRole, ADDRESS_ZERO);
+    const executorTx = await timeLock.grantRole(executorRole, ethers.constants.AddressZero);
     await executorTx.wait(1);
 
     console.log("Revoking timelock.ADMIN_ROLE for deployer");
     const revokeTx = await timeLock.revokeRole(adminRole, await deployer.getAddress());
     await revokeTx.wait(1);
+
+    console.log("Transfer Box ownership to Timelock contract for automation! (queue and execute)");
+    const transferTx = await box.transferOwnership(timeLock.address);
+    await transferTx.wait(1);
 }
 
 async function main() {
@@ -52,17 +56,17 @@ async function main() {
     await delegate(governanceToken.address, await deployer.getAddress());
 
     const timeLock = (await deployContract(deployer, "TimeLock", [MIN_DELAY, [], []])) as TimeLock;
-    await deployContract(deployer, "Box");
-    await deployContract(deployer, "GovernorContract", [
+    const governor = (await deployContract(deployer, "GovernorContract", [
         governanceToken.address,
         timeLock.address,
         QUORUM_PERCENTAGE,
         VOTING_PERIOD,
         VOTING_DELAY,
-    ]);
+    ])) as GovernorContract;
 
+    const box = (await deployContract(deployer, "Box")) as Box;
     // setup governanco for DAO and correct access
-    await setupContracts(deployer, governanceToken, timeLock);
+    await setupContracts(deployer, governor, timeLock, box);
     console.log(deployData);
 }
 
