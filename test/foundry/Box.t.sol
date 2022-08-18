@@ -5,11 +5,11 @@ import {Box} from "../../contracts/Box.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 
 abstract contract TestParameters {
-    string internal _INITIAL_VALUE = 22;
+    int256 internal _INITIAL_VALUE = 22;
 }
 
 contract BoxTest is TestParameters, TestHelpers {
-    box public Box;
+    Box public box;
 
     function setUp() public {
         box = new Box();
@@ -17,11 +17,11 @@ contract BoxTest is TestParameters, TestHelpers {
 
     function testStore() public {
         box.store(22);
-        assertEq(box.retrieve, 22);
+        assertEq(box.retrieve(), 22);
     }
 
     function testNewValue() public {
         box.store(23);
-        assertEq(box.retrieve, 23);
+        assertEq(box.retrieve(), 23);
     }
 }
