@@ -1,4 +1,6 @@
 import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-network-helpers";
+import "@nomicfoundation/hardhat-chai-matchers";
 import "hardhat-abi-exporter";
 import "dotenv/config";
 import { HardhatUserConfig } from "hardhat/config";

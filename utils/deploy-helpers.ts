@@ -39,8 +39,8 @@ export async function deployContract(
     contractName: string,
     constructorArguments?: unknown[]
 ): Promise<Contract> {
-    console.log("--------------------------------------------------");
-    console.log(`Deploying ${contractName} with account ${await deployer.getAddress()}, waiting for confirmations...`);
+    // console.log("--------------------------------------------------");
+    // console.log(`Deploying ${contractName} with account ${await deployer.getAddress()}, waiting for confirmations...`);
 
     let contractArgs: unknown[] = [];
     if (typeof constructorArguments !== "undefined") {

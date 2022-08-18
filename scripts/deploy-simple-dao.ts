@@ -49,7 +49,7 @@ async function setupContracts(deployer: Signer, governor: GovernorContract, time
     await transferTx.wait(1);
 }
 
-async function main() {
+export async function deployContractsAndSetupGovernanceRoles() {
     const deployer = await getContractSigner();
     // deployment
     const governanceToken = (await deployContract(deployer, "GovernanceToken")) as GovernanceToken;
@@ -67,10 +67,9 @@ async function main() {
     const box = (await deployContract(deployer, "Box")) as Box;
     // setup governanco for DAO and correct access
     await setupContracts(deployer, governor, timeLock, box);
-    console.log(deployData);
 }
 
-main()
+deployContractsAndSetupGovernanceRoles()
     .then(() => process.exit(0))
     .catch((error) => {
         console.error(error);
