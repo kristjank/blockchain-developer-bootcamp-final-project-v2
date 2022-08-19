@@ -29,4 +29,10 @@ contract Utils is Test {
         uint256 targetBlock = block.number + numBlocks;
         vm.roll(targetBlock);
     }
+
+    // move block.number forward by a given number of blocks
+    function moveTime(uint256 time) external {
+        uint256 targetTime = block.timestamp + time;
+        vm.warp(targetTime);
+    }
 }

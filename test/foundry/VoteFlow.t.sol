@@ -68,7 +68,7 @@ contract VoteFlowTest is TestParameters {
         timeLock.grantRole(timeLock.EXECUTOR_ROLE(), address(0));
         timeLock.revokeRole(timeLock.TIMELOCK_ADMIN_ROLE(), alice);
         box.transferOwnership(address(timeLock));
-        
+
         //move 1 block forward, if not, testPropose fails!
         utils.mineBlocks(1);
     }
@@ -79,7 +79,6 @@ contract VoteFlowTest is TestParameters {
     }
 
     function testPropose() public asPrankedUser(alice) {
-        
         // proposal creation
         address[] memory targets = new address[](1);
         uint256[] memory values = new uint256[](1);
@@ -96,10 +95,15 @@ contract VoteFlowTest is TestParameters {
 
         // vote
         uint256 voteWeight = governor.castVoteWithReason(proposalId, 1, "I Vote YES");
-        utils.mineBlocks(_VOTING_DELAY + 1);
+        utils.mineBlocks(_VOTING_PERIOD + 1);
 
         // queueing vote
-        uint256 xxxId = governor.queue(targets, values, calldatas, keccak256(bytes(description)));
+        uint256 xxxId1 = governor.queue(targets, values, calldatas, keccak256(bytes(description)));
+        utils.mineBlocks(1);
+        utils.moveTime(_MIN_DELAY + 1);
 
+        // executing vote
+        uint256 xxxId2 = governor.execute(targets, values, calldatas, keccak256(bytes(description)));
+        utils.mineBlocks(1);
     }
 }
