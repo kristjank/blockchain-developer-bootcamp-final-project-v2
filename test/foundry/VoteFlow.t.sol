@@ -14,17 +14,11 @@ abstract contract TestParameters is Test {
     uint256 internal _INITIAL_VALUE = 22;
 
     // Governor Values
-    uint256 _QUORUM_PERCENTAGE = 4; // Need 4% of voters to pass
-    uint256 _MIN_DELAY = 3600; // 1 hour - after a vote passes, you have 1 hour before you can enact
+    uint256 internal _QUORUM_PERCENTAGE = 4; // Need 4% of voters to pass
+    uint256 internal _MIN_DELAY = 3600; // 1 hour - after a vote passes, you have 1 hour before you can enact
     // int256   VOTING_PERIOD = 45818 // 1 week - how long the vote lasts. This is pretty long even for local tests
-    uint256 _VOTING_PERIOD = 5; // blocks
-    uint256 _VOTING_DELAY = 1; // 1 Block - How many blocks till a proposal vote becomes active
-    string _ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
-
-    uint256 _NEW_STORE_VALUE = 71;
-    string _FUNC_NAME = "store";
-    string _PROPOSAL_DESCRIPTION = "Proposal #1 77 in the Box!";
-    uint256 _PROPOSAL_INDEX = 0;
+    uint256 internal _VOTING_PERIOD = 5; // blocks
+    uint256 internal _VOTING_DELAY = 1; // 1 Block - How many blocks till a proposal vote becomes active
 
     Utils internal utils;
     address payable[] internal users;
@@ -56,37 +50,56 @@ contract VoteFlowTest is TestParameters {
     GovernanceToken public governanceToken;
     address[] public proposers;
     address[] public executors;
-    address[] public contracts;
-    uint256[] public values;
-    bytes[] public functionCalls;
+
+    constructor() public {
+        TestParameters.setUp();
+    }
 
     function setUp() public virtual override asPrankedUser(alice) {
-        TestParameters.setUp();
         box = new Box();
         governanceToken = new GovernanceToken();
         governanceToken.delegate(alice);
 
-        contracts.push(address(box));
-
-        values.push(0);
-        functionCalls.push(abi.encodeWithSignature("store(uint256)", 33));
-
         timeLock = new TimeLock(_MIN_DELAY, proposers, executors);
         governor = new GovernorContract(governanceToken, timeLock, _QUORUM_PERCENTAGE, _VOTING_PERIOD, _VOTING_DELAY);
 
-        //
+        //setup governance roles
         timeLock.grantRole(timeLock.PROPOSER_ROLE(), address(governor));
         timeLock.grantRole(timeLock.EXECUTOR_ROLE(), address(0));
         timeLock.revokeRole(timeLock.TIMELOCK_ADMIN_ROLE(), alice);
         box.transferOwnership(address(timeLock));
+        
+        //move 1 block forward, if not, testPropose fails!
+        utils.mineBlocks(1);
+    }
+
+    function testBoxOwnable() public asPrankedUser(address(timeLock)) {
+        box.store(22);
+        assertEq(box.retrieve(), 22);
     }
 
     function testPropose() public asPrankedUser(alice) {
-        //box.store(22);
-        console.log(address(box));
-        governor.propose(contracts, values, functionCalls, _PROPOSAL_DESCRIPTION);
-        vm.roll(_VOTING_DELAY + 1);
+        
+        // proposal creation
+        address[] memory targets = new address[](1);
+        uint256[] memory values = new uint256[](1);
+        bytes[] memory calldatas = new bytes[](1);
+        string memory description;
 
-        assertEq(box.retrieve(), 33);
+        targets[0] = address(box);
+        values[0] = uint256(0);
+        calldatas[0] = abi.encodeWithSignature("store(uint256)", 33);
+        description = "A pro proposal!";
+
+        uint256 proposalId = governor.propose(targets, values, calldatas, description);
+        utils.mineBlocks(_VOTING_DELAY + 1);
+
+        // vote
+        uint256 voteWeight = governor.castVoteWithReason(proposalId, 1, "I Vote YES");
+        utils.mineBlocks(_VOTING_DELAY + 1);
+
+        // queueing vote
+        uint256 xxxId = governor.queue(targets, values, calldatas, keccak256(bytes(description)));
+
     }
 }
