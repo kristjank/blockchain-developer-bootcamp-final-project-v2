@@ -10,9 +10,9 @@ import {
     developmentChains,
     proposalsFile,
     PROPOSAL_INDEX,
-} from "../helper-hardhat-config";
+} from "../../helper-hardhat-config";
 import * as fs from "fs";
-import { getDeployedContract } from "../utils/deploy-helpers";
+import { getDeployedContract } from "../../utils/deploy-helpers";
 
 const index = PROPOSAL_INDEX;
 

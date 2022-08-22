@@ -1,9 +1,15 @@
 /* eslint-disable node/no-unpublished-import */
 /* eslint-disable no-process-exit */
 import { ethers, network } from "hardhat";
-import { FUNC, NEW_STORE_VALUE, PROPOSAL_DESCRIPTION, proposalsFile, PROPOSAL_INDEX } from "../helper-hardhat-config";
+import {
+    FUNC,
+    NEW_STORE_VALUE,
+    PROPOSAL_DESCRIPTION,
+    proposalsFile,
+    PROPOSAL_INDEX,
+} from "../../helper-hardhat-config";
 import * as fs from "fs";
-import { getDeployedContract } from "../utils/deploy-helpers";
+import { getDeployedContract } from "../../utils/deploy-helpers";
 
 const index = PROPOSAL_INDEX;
 

@@ -9,8 +9,8 @@ import {
     developmentChains,
     VOTING_DELAY,
     proposalsFile,
-} from "../helper-hardhat-config";
-import { getDeployedContract } from "../utils/deploy-helpers";
+} from "../../helper-hardhat-config";
+import { getDeployedContract } from "../../utils/deploy-helpers";
 import * as fs from "fs";
 
 export async function propose(args: unknown[], functionToCall: string, proposalDescription: string): Promise<void> {

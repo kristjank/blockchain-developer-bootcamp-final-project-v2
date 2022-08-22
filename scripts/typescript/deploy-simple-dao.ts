@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable node/no-unpublished-import */
 import { ethers, network } from "hardhat";
-import { Box, GovernanceToken, GovernorContract, TimeLock } from "../typechain-types";
+import { Box, GovernanceToken, GovernorContract, TimeLock } from "../../typechain-types";
 import {
     networkConfig,
     developmentChains,
@@ -11,8 +11,8 @@ import {
     VOTING_DELAY,
     VOTING_PERIOD,
     ADDRESS_ZERO,
-} from "../helper-hardhat-config";
-import { getContractSigner, deployContract, deployData, getDeployedContract } from "../utils/deploy-helpers";
+} from "../../helper-hardhat-config";
+import { getContractSigner, deployContract, deployData, getDeployedContract } from "../../utils/deploy-helpers";
 import { Signer } from "ethers";
 
 async function delegate(governanceTokenAddress: string, delegatedAccount: string) {

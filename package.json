@@ -20,8 +20,8 @@
         "test:gas": "REPORT_GAS=true hardhat test",
         "test:forge": "forge test",
         "test:coverage": "hardhat coverage && hardhat compile --force",
-        "deploy:local": "hardhat run scripts/deploy-simple-dao.ts --network localhost",
-        "deploy:rinkeby": "hardhat run scripts/deploy-simple-dao.ts --network rinkeby",
+        "deploy:local": "hardhat run scripts/typescript/deploy-simple-dao.ts --network localhost",
+        "deploy:rinkeby": "hardhat run scripts/typescript/deploy-simple-dao.ts --network rinkeby",
         "node:local": "hardhat node"
     },
     "devDependencies": {

@@ -9,6 +9,6 @@
         "forceConsistentCasingInFileNames": true,
         "skipLibCheck": true
     },
-    "include": ["./scripts", "./test", "./typechain", "./deploy"],
+    "include": ["./scripts/typescript", "./test/typescript", "./typechain", "./deploy"],
     "files": ["./hardhat.config.ts"]
 }

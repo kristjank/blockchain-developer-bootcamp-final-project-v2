@@ -2,8 +2,8 @@
 /* eslint-disable no-process-exit */
 import * as fs from "fs";
 import { network } from "hardhat";
-import { proposalsFile, developmentChains, VOTING_PERIOD, PROPOSAL_INDEX } from "../helper-hardhat-config";
-import { getDeployedContract } from "../utils/deploy-helpers";
+import { proposalsFile, developmentChains, VOTING_PERIOD, PROPOSAL_INDEX } from "../../helper-hardhat-config";
+import { getDeployedContract } from "../../utils/deploy-helpers";
 import { mine } from "@nomicfoundation/hardhat-network-helpers";
 
 const index = PROPOSAL_INDEX;
