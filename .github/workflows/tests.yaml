@@ -19,7 +19,7 @@ jobs:
               with:
                   node-version: 14.x
             - name: Install dev dependencies
-              run: npm install --frozen-lockfile
+              run: npm install
             - name: Install Foundry
               uses: onbjerg/foundry-toolchain@v1
               with:
