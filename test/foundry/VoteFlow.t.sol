@@ -10,13 +10,11 @@ import {TimeLock} from "../../contracts/TimeLock.sol";
 import {GovernorContract} from "../../contracts/GovernorContract.sol";
 import {Utils} from "./Utils.sol";
 
-import "@openzeppelin/contracts/interfaces/IERC20.sol";
-
 abstract contract TestParameters is Test {
     uint256 internal _INITIAL_VALUE = 22;
 
     // Governor Values
-    uint256 internal _QUORUM_PERCENTAGE = 4; // Need 4% of voters to pass
+    uint256 internal _QUORUM_PERCENTAGE = 75; // Need XX% of voters to pass
     uint256 internal _MIN_DELAY = 3600; // 1 hour - after a vote passes, you have 1 hour before you can enact
     // int256   VOTING_PERIOD = 45818 // 1 week - how long the vote lasts. This is pretty long even for local tests
     uint256 internal _VOTING_PERIOD = 5; // blocks
@@ -63,17 +61,15 @@ contract VoteFlowTest is TestParameters {
         TestParameters.setUp();
     }
 
-    function setUp() public virtual override asPrankedUser(alice) {
+    function setUp() public virtual override {
+        vm.startPrank(alice);
+
         box = new Box();
+        // deploy and split governance token
         governanceToken = new GovernanceToken();
-        governanceToken.delegate(alice);
-
-        bool success = governanceToken.transfer(bob, 500000000000000000000000);
-        console.log(governanceToken.balanceOf(address(alice)));
-        console.log(governanceToken.balanceOf(address(bob)));
-
-        require(success == true);
-        utils.mineBlocks(1);
+        governanceToken.transfer(bob, 250_000 ether);
+        governanceToken.transfer(rik, 250_000 ether);
+        governanceToken.transfer(morty, 250_000 ether);
 
         timeLock = new TimeLock(_MIN_DELAY, proposers, executors);
         governor = new GovernorContract(governanceToken, timeLock, _QUORUM_PERCENTAGE, _VOTING_PERIOD, _VOTING_DELAY);
@@ -83,8 +79,14 @@ contract VoteFlowTest is TestParameters {
         timeLock.grantRole(timeLock.EXECUTOR_ROLE(), address(0));
         timeLock.revokeRole(timeLock.TIMELOCK_ADMIN_ROLE(), alice);
         box.transferOwnership(address(timeLock));
+        vm.stopPrank();
 
-        //move 1 block forward, if not, testPropose fails!
+        delegateVotes(alice);
+        delegateVotes(bob);
+        delegateVotes(rik);
+        delegateVotes(morty);
+
+        // move 1 block forward, if not, testPropose fails! so snapshot and state gets settled
         utils.mineBlocks(1);
     }
 
@@ -94,14 +96,11 @@ contract VoteFlowTest is TestParameters {
     }
 
     function testPropose() public {
-        vm.startPrank(alice);
         // proposal creation
         address[] memory targets = new address[](1);
         uint256[] memory values = new uint256[](1);
         bytes[] memory calldatas = new bytes[](1);
         string memory description;
-
-        governanceToken.delegate(alice);
 
         targets[0] = address(box);
         values[0] = uint256(0);
@@ -111,19 +110,15 @@ contract VoteFlowTest is TestParameters {
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
         utils.mineBlocks(_VOTING_DELAY + 1);
 
-        // vote
-        uint256 voteWeightA = governor.castVoteWithReason(proposalId, 1, "I Vote YES");
-        utils.mineBlocks(1);
+        genericVote(alice, proposalId, 1, "ok, I agree");
+        genericVote(bob, proposalId, 1, "nonono");
+        genericVote(rik, proposalId, 0, "nonono");
+        genericVote(morty, proposalId, 1, "nonono");
 
-        vm.stopPrank();
-        vm.startPrank(bob);
-        governanceToken.delegate(bob);
-        // vote
-        uint256 voteWeightB = governor.castVoteWithReason(proposalId, 1, "I Vote YES");
+        // voting is done, lets finish the vote period
         utils.mineBlocks(_VOTING_PERIOD + 1);
-        vm.stopPrank();
 
-        // queueing vote
+        // queueing vote, anyone can queue and execute
         uint256 xxxId1 = governor.queue(targets, values, calldatas, keccak256(bytes(description)));
         utils.mineBlocks(1);
         utils.moveTime(_MIN_DELAY + 1);
@@ -131,5 +126,25 @@ contract VoteFlowTest is TestParameters {
         // executing vote
         uint256 xxxId2 = governor.execute(targets, values, calldatas, keccak256(bytes(description)));
         utils.mineBlocks(1);
+
+        // let's check is the vote was executed - call data store on the box contract
+        assertEq(box.retrieve(), 33);
+    }
+
+    function genericVote(
+        address voter,
+        uint256 proposalId,
+        uint8 support,
+        string memory reason
+    ) internal {
+        vm.startPrank(voter);
+        uint256 voteWeightB = governor.castVoteWithReason(proposalId, support, reason);
+        vm.stopPrank();
+    }
+
+    function delegateVotes(address voter) internal {
+        vm.startPrank(voter);
+        governanceToken.delegate(voter);
+        vm.stopPrank();
     }
 }
