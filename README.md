@@ -6,9 +6,11 @@
 -   Implementation of a simple AMM (constant)
     -   DAO Framework will be used to vote upon and change fees and other logic TBD
 
-### Structure
+## Structure
 
-It is a hybrid [Hardhat](https://hardhat.org/) repo that also requires [Foundry](https://book.getfoundry.sh/index.html) to run Solidity tests powered by the [ds-test library](https://github.com/dapphub/ds-test/).
+It is a hybrid [Hardhat](https://hardhat.org/) repo that requires [Foundry](https://book.getfoundry.sh/index.html) to run Solidity tests powered by the [ds-test library](https://github.com/dapphub/ds-test/).
+
+You can also deploy with foundry using the forge command.
 
 > To install Foundry, please follow the instructions [here](https://book.getfoundry.sh/getting-started/installation.html).
 
@@ -17,9 +19,19 @@ curl -L https://foundry.paradigm.xyz | bash
 foundryup
 ```
 
-### Run tests
+---
 
-### Foundry
+## Foundry
+
+### Deployment
+
+Configure your `.env` files, based on the `.env.example`.
+
+Run the deploy script:
+
+` forge script scripts/foundry/deploy.s.sol:DeployContracts --rpc-url $RINKEBY_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY -vvvv`
+
+### Testing and developing
 
 Most of the tests are implemented using `foundry/forge`. Just run the `forge test` command. Or `forge test -vvvv` for more details`. Check foundry docs for more information.
 
@@ -27,19 +39,23 @@ As foundry tests are much simpler to run and maintain, there is no need for comp
 
 Just run `forge test` - for now.
 
-### Hardhat
+---
 
-#### Deployment and local node start
+## Hardhat
+
+### Deployment and local node start
 
 0. `npm run node:local` # start local node
 1. `npm run deploy:local` # deploy contracts
 
-#### Scripts simulating voting process
+### Scripts simulating voting process
 
 1. `npx hardhat run scripts/typescript/propose.ts --network localhost`
 2. `npx hardhat run scripts/typescript/vote.ts --network localhost`
 3. `npx hardhat run scripts/typescript/queue.ts --network localhost`
 4. `npx hardhat run scripts/typescript/execute.ts --network localhost`
+
+---
 
 ## Help on how to run hardhard and foundry cli commands
 
