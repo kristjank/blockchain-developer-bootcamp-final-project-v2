@@ -172,10 +172,11 @@ contract VoteFlowTest is TestParameters {
         uint256 proposalId,
         uint8 support,
         string memory reason
-    ) internal {
+    ) internal returns (uint256) {
         vm.startPrank(voter);
-        uint256 voteWeightB = governor.castVoteWithReason(proposalId, support, reason);
+        uint256 voteWeight = governor.castVoteWithReason(proposalId, support, reason);
         vm.stopPrank();
+        return voteWeight;
     }
 
     function delegateVotes(address voter) internal {
