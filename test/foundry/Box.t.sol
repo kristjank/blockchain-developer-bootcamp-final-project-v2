@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Box} from "../../contracts/Box.sol";
-import {TestHelpers} from "./TestHelpers.sol";
+import {Test} from "../../lib/forge-std/src/Test.sol";
 
-abstract contract TestParameters {
+import {Box} from "../../contracts/Box.sol";
+
+abstract contract TestParameters is Test {
     int256 internal _INITIAL_VALUE = 22;
 }
 
-contract BoxTest is TestParameters, TestHelpers {
+contract BoxTest is TestParameters {
     Box public box;
 
     function setUp() public {
