@@ -19,7 +19,27 @@ foundryup
 
 ### Run tests
 
+### Foundry
+
 Most of the tests are implemented using `foundry/forge`. Just run the `forge test` command. Or `forge test -vvvv` for more details`. Check foundry docs for more information.
+
+As foundry tests are much simpler to run and maintain, there is no need for complex calls, as you can see below under Hardhat section.
+
+Just run `forge test` - for now.
+
+### Hardhat
+
+#### Deployment and local node start
+
+0. `npm run node:local` # start local node
+1. `npm run deploy:local` # deploy contracts
+
+#### Scripts simulating voting process
+
+1. `npx hardhat run scripts/typescript/propose.ts --network localhost`
+2. `npx hardhat run scripts/typescript/vote.ts --network localhost`
+3. `npx hardhat run scripts/typescript/queue.ts --network localhost`
+4. `npx hardhat run scripts/typescript/execute.ts --network localhost`
 
 ## Help on how to run hardhard and foundry cli commands
 
