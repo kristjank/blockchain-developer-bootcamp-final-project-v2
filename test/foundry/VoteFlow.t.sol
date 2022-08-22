@@ -10,6 +10,8 @@ import {TimeLock} from "../../contracts/TimeLock.sol";
 import {GovernorContract} from "../../contracts/GovernorContract.sol";
 import {Utils} from "./Utils.sol";
 
+import "@openzeppelin/contracts/interfaces/IERC20.sol";
+
 abstract contract TestParameters is Test {
     uint256 internal _INITIAL_VALUE = 22;
 
@@ -25,6 +27,8 @@ abstract contract TestParameters is Test {
 
     address internal alice;
     address internal bob;
+    address internal rik;
+    address internal morty;
 
     modifier asPrankedUser(address user) {
         vm.startPrank(user);
@@ -40,6 +44,10 @@ abstract contract TestParameters is Test {
         vm.label(alice, "Alice");
         bob = users[1];
         vm.label(bob, "Bob");
+        rik = users[2];
+        vm.label(rik, "Rik");
+        morty = users[3];
+        vm.label(morty, "Morty");
     }
 }
 
@@ -60,6 +68,13 @@ contract VoteFlowTest is TestParameters {
         governanceToken = new GovernanceToken();
         governanceToken.delegate(alice);
 
+        bool success = governanceToken.transfer(bob, 500000000000000000000000);
+        console.log(governanceToken.balanceOf(address(alice)));
+        console.log(governanceToken.balanceOf(address(bob)));
+
+        require(success == true);
+        utils.mineBlocks(1);
+
         timeLock = new TimeLock(_MIN_DELAY, proposers, executors);
         governor = new GovernorContract(governanceToken, timeLock, _QUORUM_PERCENTAGE, _VOTING_PERIOD, _VOTING_DELAY);
 
@@ -78,12 +93,15 @@ contract VoteFlowTest is TestParameters {
         assertEq(box.retrieve(), 22);
     }
 
-    function testPropose() public asPrankedUser(alice) {
+    function testPropose() public {
+        vm.startPrank(alice);
         // proposal creation
         address[] memory targets = new address[](1);
         uint256[] memory values = new uint256[](1);
         bytes[] memory calldatas = new bytes[](1);
         string memory description;
+
+        governanceToken.delegate(alice);
 
         targets[0] = address(box);
         values[0] = uint256(0);
@@ -94,8 +112,16 @@ contract VoteFlowTest is TestParameters {
         utils.mineBlocks(_VOTING_DELAY + 1);
 
         // vote
-        uint256 voteWeight = governor.castVoteWithReason(proposalId, 1, "I Vote YES");
+        uint256 voteWeightA = governor.castVoteWithReason(proposalId, 1, "I Vote YES");
+        utils.mineBlocks(1);
+
+        vm.stopPrank();
+        vm.startPrank(bob);
+        governanceToken.delegate(bob);
+        // vote
+        uint256 voteWeightB = governor.castVoteWithReason(proposalId, 1, "I Vote YES");
         utils.mineBlocks(_VOTING_PERIOD + 1);
+        vm.stopPrank();
 
         // queueing vote
         uint256 xxxId1 = governor.queue(targets, values, calldatas, keccak256(bytes(description)));
