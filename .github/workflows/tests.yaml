@@ -26,7 +26,5 @@ jobs:
                   version: nightly
             - name: Compile code (Hardhat)
               run: npm run compile:force
-            - name: Run TypeScript/Waffle tests
-              run: npm run test
-#            - name: Run Solidity/Forge tests
-#             run: forge test
+            - name: Run Solidity/Forge tests
+              run: forge test
