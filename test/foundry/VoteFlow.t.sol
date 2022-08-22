@@ -95,7 +95,7 @@ contract VoteFlowTest is TestParameters {
         assertEq(box.retrieve(), 22);
     }
 
-    function testPropose() public {
+    function testFailVote() public {
         // proposal creation
         address[] memory targets = new address[](1);
         uint256[] memory values = new uint256[](1);
@@ -111,9 +111,45 @@ contract VoteFlowTest is TestParameters {
         utils.mineBlocks(_VOTING_DELAY + 1);
 
         genericVote(alice, proposalId, 1, "ok, I agree");
-        genericVote(bob, proposalId, 1, "nonono");
+        genericVote(bob, proposalId, 0, "nonono");
         genericVote(rik, proposalId, 0, "nonono");
         genericVote(morty, proposalId, 1, "nonono");
+
+        // voting is done, lets finish the vote period
+        utils.mineBlocks(_VOTING_PERIOD + 1);
+
+        // queueing vote, anyone can queue and execute
+        uint256 xxxId1 = governor.queue(targets, values, calldatas, keccak256(bytes(description)));
+        utils.mineBlocks(1);
+        utils.moveTime(_MIN_DELAY + 1);
+
+        // executing vote
+        uint256 xxxId2 = governor.execute(targets, values, calldatas, keccak256(bytes(description)));
+        utils.mineBlocks(1);
+
+        // let's check is the vote was executed - call data store on the box contract
+        assertEq(box.retrieve(), 33);
+    }
+
+    function testVoteAccepted() public {
+        // proposal creation
+        address[] memory targets = new address[](1);
+        uint256[] memory values = new uint256[](1);
+        bytes[] memory calldatas = new bytes[](1);
+        string memory description;
+
+        targets[0] = address(box);
+        values[0] = uint256(0);
+        calldatas[0] = abi.encodeWithSignature("store(uint256)", 33);
+        description = "A pro proposal!";
+
+        uint256 proposalId = governor.propose(targets, values, calldatas, description);
+        utils.mineBlocks(_VOTING_DELAY + 1);
+
+        genericVote(alice, proposalId, 1, "ok, I agree");
+        genericVote(bob, proposalId, 1, "sure");
+        genericVote(rik, proposalId, 0, "ahm no way");
+        genericVote(morty, proposalId, 1, "well ok, my mom agrees");
 
         // voting is done, lets finish the vote period
         utils.mineBlocks(_VOTING_PERIOD + 1);
