@@ -3,33 +3,34 @@
 ## Features
 
 -   Governance Framework for DAO - implemented with OZ governance contracts
--   Implementation of a simple AMM (constant)
-    -   DAO Framework will be used to vote upon and change fees and other logic TBD
+-   Implementation of a simple AMM (constant market maker)
+    -   DAO Framework will be used to vote upon and change fees and other governance logic
 
-## Structure
+## Structure of the project
 
 It is a hybrid [Hardhat](https://hardhat.org/) repo that requires [Foundry](https://book.getfoundry.sh/index.html) to run Solidity tests powered by the [ds-test library](https://github.com/dapphub/ds-test/).
-
-You can also deploy with foundry using the forge command.
 
 > To install Foundry, please follow the instructions [here](https://book.getfoundry.sh/getting-started/installation.html).
 
 ```bash
 curl -L https://foundry.paradigm.xyz | bash
+source .bashrc # or other shell config file, based on the shell you are using
 foundryup
 ```
 
 ---
 
-## Foundry
+## Foundry instructions
 
 ### Deployment
 
-Configure your `.env` files, based on the `.env.example`.
+Configure your `.env` files, based on the `.env.example`. Make sure to run `source .env` after.
 
 Run the deploy script:
 
-` forge script scripts/foundry/deploy.s.sol:DeployContracts --rpc-url $RINKEBY_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY -vvvv`
+```bash
+forge script scripts/foundry/deploy.s.sol:DeployContracts --rpc-url $RINKEBY_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY -vvvv
+```
 
 ### Testing and developing
 
@@ -41,7 +42,7 @@ Just run `forge test` - for now.
 
 ---
 
-## Hardhat
+## Hardhat instructions
 
 ### Deployment and local node start
 
@@ -49,6 +50,8 @@ Just run `forge test` - for now.
 1. `npm run deploy:local` # deploy contracts
 
 ### Scripts simulating voting process
+
+To simulate a governance voting process you need to run the scripts in the following order (PROPOSE A VOTE | VOTE | QUEUE | EXECUTE).
 
 1. `npx hardhat run scripts/typescript/propose.ts --network localhost`
 2. `npx hardhat run scripts/typescript/vote.ts --network localhost`
